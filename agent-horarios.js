@@ -9,10 +9,13 @@ const require = createRequire(import.meta.url);
 require('dotenv').config();
 process.removeAllListeners('warning');
 
-const GROQ_KEY   = process.env.GROQ_API_KEY;
-const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+//const GROQ_KEY   = process.env.GROQ_API_KEY;
+//const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 const DB_PATH = process.env.DB_PATH || './horarios.db';
 const PERIODO    = '2025-1';
+
+const GROQ_KEY   = process.env.DEEPSEEK_API_KEY;
+const GROQ_MODEL = process.env.GROQ_MODEL;
 
 if (!GROQ_KEY) {
   console.error('❌ No se encontró GROQ_API_KEY en .env');
@@ -326,6 +329,7 @@ export function ejecutarTool(nombre, args) {
 }
 
 // ── Llamar a Groq
+/* 
 async function llamarGroq(mensajes) {
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -340,6 +344,27 @@ async function llamarGroq(mensajes) {
   });
   const data = await res.json();
   if (data.error) throw new Error(`Groq error: ${data.error.message}`);
+  return data.choices[0].message;
+}
+*/
+
+async function llamarGroq(mensajes) {
+  const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 
+      'Authorization': `Bearer ${GROQ_KEY}`, 
+      'Content-Type': 'application/json' 
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      messages: mensajes,
+      tools: TOOLS,
+      tool_choice: 'auto',
+      max_tokens: 2000
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(`DeepSeek error: ${data.error.message}`);
   return data.choices[0].message;
 }
 
