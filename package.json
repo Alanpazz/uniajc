@@ -8,7 +8,7 @@
     "seed": "node seed-horarios.js",
     "agent": "node agent-horarios.js",
     "server": "node server.js",
-    "start": "node server.js"
+    "start": "node --no-warnings seed-horarios.js && node server.js"
   },
   "engines": {
     "node": ">=22.0.0"
