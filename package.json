@@ -1,0 +1,19 @@
+{
+  "name": "uniajc-horarios",
+  "version": "1.0.0",
+  "description": "Agente IA de Optimización de Horarios — Facultad de Ingeniería UNIAJC",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "seed": "node seed-horarios.js",
+    "agent": "node agent-horarios.js",
+    "server": "node server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0"
+  }
+}
