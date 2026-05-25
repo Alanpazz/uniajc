@@ -11,7 +11,7 @@ process.removeAllListeners('warning');
 
 const GROQ_KEY   = process.env.GROQ_API_KEY;
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
-const DB_PATH    = './horarios.db';
+const DB_PATH = process.env.DB_PATH || './horarios.db';
 const PERIODO    = '2025-1';
 
 if (!GROQ_KEY) {
