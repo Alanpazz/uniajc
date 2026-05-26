@@ -3,376 +3,492 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agente Horarios — UNIAJC 2025-1</title>
+<title>Agente Horarios UNIAJC v2.0</title>
 <style>
 :root {
-  --bg:      #04080e;
-  --bg2:     #070d17;
-  --surface: #0e1a2e;
-  --border:  rgba(139,211,255,0.18);
-  --sky:     #8BD3FF;
-  --mint:    #34E8B0;
-  --gold:    #F5C842;
-  --coral:   #FF6B6B;
-  --lav:     #B8A4FF;
-  --text:    #DCE9F7;
-  --text2:   #7A9ABF;
-  --mono:    'JetBrains Mono', monospace;
+  --bg:#04080e; --bg2:#070d17; --surface:#0e1a2e; --border:rgba(139,211,255,.18);
+  --sky:#8BD3FF; --mint:#34E8B0; --gold:#F5C842; --coral:#FF6B6B; --lav:#B8A4FF;
+  --text:#DCE9F7; --text2:#7A9ABF; --mono:'JetBrains Mono',monospace;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  background:var(--bg); color:var(--text);
-  font-family:'Segoe UI',system-ui,sans-serif; line-height:1.7;
-  min-height:100vh;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
 
-/* Layout */
-.layout { display:grid; grid-template-columns:320px 1fr; min-height:100vh; }
+/* ── NAV */
+nav{background:rgba(7,13,23,.97);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:0;height:52px;flex-shrink:0}
+.nav-brand{font-weight:700;color:var(--sky);font-size:15px;margin-right:24px;white-space:nowrap}
+.nav-brand span{color:var(--mint)}
+.nav-tab{padding:0 16px;height:52px;display:flex;align-items:center;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--sky);border-bottom-color:var(--sky)}
+.nav-right{margin-left:auto;display:flex;gap:8px}
+.btn-sm{padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .2s}
+.btn-sm:hover{border-color:var(--sky);color:var(--sky)}
+.btn-sm.primary{background:linear-gradient(135deg,var(--sky),var(--mint));color:#000;border:none}
 
-/* Sidebar */
-.sidebar {
-  background:rgba(4,8,14,0.97); border-right:1px solid var(--border);
-  padding:24px 20px; display:flex; flex-direction:column; gap:16px;
-  position:sticky; top:0; height:100vh; overflow-y:auto;
-}
-.logo { text-align:center; padding:12px 0; border-bottom:1px solid var(--border); margin-bottom:8px; }
-.logo-icon { font-size:32px; display:block; margin-bottom:6px; }
-.logo-title { font-size:18px; font-weight:700; color:var(--sky); }
-.logo-sub { font-size:11px; color:var(--text2); font-family:var(--mono); letter-spacing:1px; }
+/* ── LAYOUT */
+.app{display:flex;flex:1;overflow:hidden}
+.sidebar{width:300px;flex-shrink:0;background:rgba(4,8,14,.97);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;height:calc(100vh - 52px)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 52px)}
 
-.panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; }
-.panel-title { font-family:var(--mono); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--sky); margin-bottom:12px; }
+/* ── SIDEBAR */
+.sidebar-section{padding:16px;border-bottom:1px solid var(--border)}
+.sidebar-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sky);margin-bottom:10px}
+.quick-btn{display:block;width:100%;text-align:left;background:none;border:1px solid var(--border);border-radius:7px;padding:7px 11px;color:var(--text2);font-size:12.5px;cursor:pointer;margin-bottom:5px;transition:all .2s}
+.quick-btn:hover{border-color:var(--sky);color:var(--sky);background:rgba(139,211,255,.05)}
+.stat-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px}
+.stat-val{font-family:var(--mono);color:var(--mint);font-weight:600}
 
-.quick-btn {
-  display:block; width:100%; text-align:left; background:none;
-  border:1px solid var(--border); border-radius:8px; padding:8px 12px;
-  color:var(--text2); font-size:12.5px; cursor:pointer; margin-bottom:6px;
-  transition:all .2s;
-}
-.quick-btn:hover { border-color:var(--sky); color:var(--sky); background:rgba(139,211,255,0.05); }
-.quick-btn:last-child { margin-bottom:0; }
+/* ── PAGES */
+.page{display:none;flex:1;overflow:hidden;flex-direction:column}
+.page.active{display:flex}
 
-.stat-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:13px; }
-.stat-row:last-child { margin-bottom:0; }
-.stat-label { color:var(--text2); }
-.stat-val { font-family:var(--mono); color:var(--mint); font-weight:600; }
+/* ── CHAT */
+.chat-area{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;align-items:flex-start}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;margin-top:2px}
+.msg-avatar.user{background:linear-gradient(135deg,var(--sky),var(--mint));color:#000;font-weight:700;font-size:12px}
+.msg-avatar.agent{background:linear-gradient(135deg,#1a3a5c,#0e2a4a);border:1px solid var(--sky)}
+.msg-name{font-size:10px;font-family:var(--mono);color:var(--text2);margin-bottom:3px;letter-spacing:1px}
+.msg-content{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.75;white-space:pre-wrap;flex:1}
+.msg.user .msg-content{background:rgba(139,211,255,.07);border-color:rgba(139,211,255,.25)}
+.thinking{display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px;font-style:italic;padding:8px 0}
+.dots span{animation:blink 1.2s infinite;display:inline-block}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.input-bar{padding:16px 28px;border-top:1px solid var(--border);background:rgba(4,8,14,.95);display:flex;gap:10px;align-items:flex-end}
+textarea{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13.5px;padding:10px 14px;resize:none;font-family:inherit;line-height:1.6;max-height:120px;outline:none;transition:border-color .2s}
+textarea:focus{border-color:var(--sky)}
+textarea::placeholder{color:var(--text2)}
+.send-btn{background:linear-gradient(135deg,var(--sky),var(--mint));color:#000;border:none;border-radius:9px;padding:10px 20px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.send-btn:hover{opacity:.85}
+.send-btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* Main */
-.main { display:flex; flex-direction:column; }
+/* ── TABLAS BD */
+.bd-page{flex:1;overflow:auto;padding:20px 28px}
+.bd-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.bd-tab{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s}
+.bd-tab.active{background:rgba(139,211,255,.1);border-color:var(--sky);color:var(--sky)}
+.data-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.data-table th{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.data-table td{padding:7px 10px;color:var(--text2);border-bottom:1px solid rgba(139,211,255,.05)}
+.data-table tr:hover td{background:rgba(139,211,255,.03)}
+.data-table td:first-child{color:var(--text)}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
+.b-mint{background:rgba(52,232,176,.15);color:var(--mint)}
+.b-gold{background:rgba(245,200,66,.15);color:var(--gold)}
+.b-coral{background:rgba(255,107,107,.15);color:var(--coral)}
+.b-sky{background:rgba(139,211,255,.15);color:var(--sky)}
+.b-lav{background:rgba(184,164,255,.15);color:var(--lav)}
+.empty{text-align:center;color:var(--text2);font-size:13px;padding:32px;font-style:italic}
+.action-btn{background:none;border:1px solid var(--coral);border-radius:5px;color:var(--coral);font-size:11px;padding:2px 8px;cursor:pointer;transition:all .2s}
+.action-btn:hover{background:rgba(255,107,107,.1)}
 
-.header {
-  padding:28px 36px 20px;
-  border-bottom:1px solid var(--border);
-  background:rgba(7,13,23,0.8);
-}
-.header h1 { font-size:24px; font-weight:700; }
-.header h1 span { color:var(--sky); }
-.header p { color:var(--text2); font-size:14px; margin-top:4px; }
+/* ── EXPORTAR/NOTIFICAR PAGE */
+.tools-page{flex:1;overflow-y:auto;padding:28px}
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px}
+@media(max-width:700px){.tools-grid{grid-template-columns:1fr}}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+.tool-card h3{color:var(--sky);font-size:15px;margin-bottom:6px}
+.tool-card p{color:var(--text2);font-size:13px;margin-bottom:16px}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px;font-family:var(--mono)}
+.form-row select,.form-row input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:8px 12px;font-size:13px;outline:none}
+.form-row select:focus,.form-row input:focus{border-color:var(--sky)}
+.tool-btn{width:100%;padding:10px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:none;transition:all .2s}
+.tool-btn.export{background:linear-gradient(135deg,var(--mint),#0D9373);color:#000}
+.tool-btn.notify{background:linear-gradient(135deg,var(--lav),#7C3AED);color:#fff}
+.tool-btn:hover{opacity:.85}
+.tool-result{margin-top:12px;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text2);display:none}
+.tool-result.show{display:block}
 
-/* Chat */
-.chat-area { flex:1; overflow-y:auto; padding:24px 36px; display:flex; flex-direction:column; gap:16px; }
-
-.msg { display:flex; gap:12px; align-items:flex-start; }
-.msg-avatar { width:34px; height:34px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; margin-top:2px; }
-.msg-avatar.user { background:linear-gradient(135deg,var(--sky),var(--mint)); color:#000; font-size:14px; font-weight:700; }
-.msg-avatar.agent { background:linear-gradient(135deg,#1a3a5c,#0e2a4a); border:1px solid var(--sky); }
-.msg-bubble { flex:1; }
-.msg-name { font-size:11px; font-family:var(--mono); color:var(--text2); margin-bottom:4px; letter-spacing:1px; }
-.msg-content { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; font-size:14px; line-height:1.75; white-space:pre-wrap; }
-.msg.user .msg-content { background:rgba(139,211,255,0.07); border-color:rgba(139,211,255,0.25); }
-
-.thinking { display:flex; align-items:center; gap:8px; color:var(--text2); font-size:13px; font-style:italic; padding:10px 0; }
-.dots span { animation:blink 1.2s infinite; display:inline-block; }
-.dots span:nth-child(2) { animation-delay:.2s; }
-.dots span:nth-child(3) { animation-delay:.4s; }
-@keyframes blink { 0%,80%,100%{opacity:.3} 40%{opacity:1} }
-
-/* Input bar */
-.input-bar {
-  padding:20px 36px; border-top:1px solid var(--border);
-  background:rgba(4,8,14,0.95);
-  display:flex; gap:12px; align-items:flex-end;
-}
-textarea {
-  flex:1; background:var(--surface); border:1px solid var(--border); border-radius:12px;
-  color:var(--text); font-size:14px; padding:12px 16px; resize:none;
-  font-family:inherit; line-height:1.6; max-height:120px;
-  outline:none; transition:border-color .2s;
-}
-textarea:focus { border-color:var(--sky); }
-textarea::placeholder { color:var(--text2); }
-.send-btn {
-  background:linear-gradient(135deg,var(--sky),var(--mint)); color:#000;
-  border:none; border-radius:10px; padding:12px 22px; font-weight:700;
-  font-size:14px; cursor:pointer; white-space:nowrap; transition:opacity .2s;
-}
-.send-btn:hover { opacity:.85; }
-.send-btn:disabled { opacity:.5; cursor:not-allowed; }
-
-/* Tabs for DB panel */
-.tabs { display:flex; gap:4px; margin-bottom:12px; flex-wrap:wrap; }
-.tab { font-family:var(--mono); font-size:10px; padding:4px 10px; border-radius:6px; border:1px solid var(--border); color:var(--text2); cursor:pointer; transition:all .2s; }
-.tab.active { background:rgba(139,211,255,0.1); border-color:var(--sky); color:var(--sky); }
-
-.table-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; font-size:12px; }
-th { font-family:var(--mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text2); padding:8px 10px; text-align:left; border-bottom:1px solid var(--border); }
-td { padding:7px 10px; color:var(--text2); border-bottom:1px solid rgba(139,211,255,0.05); }
-tr:hover td { background:rgba(139,211,255,0.03); }
-td:first-child { color:var(--text); }
-
-.badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:20px; font-family:var(--mono); }
-.badge-mint  { background:rgba(52,232,176,.15);  color:var(--mint); }
-.badge-gold  { background:rgba(245,200,66,.15);  color:var(--gold); }
-.badge-coral { background:rgba(255,107,107,.15); color:var(--coral); }
-.badge-sky   { background:rgba(139,211,255,.15); color:var(--sky);  }
-.badge-lav   { background:rgba(184,164,255,.15); color:var(--lav);  }
-
-.empty-state { text-align:center; color:var(--text2); font-size:13px; padding:20px; font-style:italic; }
-
-/* Scrollbar */
-::-webkit-scrollbar { width:4px; height:4px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .layout { grid-template-columns:1fr; }
-  .sidebar { position:relative; height:auto; }
-}
+/* ── SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 </style>
 </head>
 <body>
 
-<div class="layout">
+<nav>
+  <div class="nav-brand">🎓 Agente <span>UNIAJC</span> v2.0</div>
+  <div class="nav-tab active" onclick="showPage('chat',this)">💬 Chat</div>
+  <div class="nav-tab" onclick="showPage('bd',this)">🗄️ Base de Datos</div>
+  <div class="nav-tab" onclick="showPage('tools',this)">⚡ Exportar / Notificar</div>
+  <div class="nav-right">
+    <button class="btn-sm" onclick="cargarEstado()">↻ Actualizar</button>
+  </div>
+</nav>
+
+<div class="app">
 
   <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
-    <div class="logo">
-      <span class="logo-icon">🎓</span>
-      <div class="logo-title">Agente Horarios</div>
-      <div class="logo-sub">UNIAJC — IS — 2025-1</div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">⚡ Consultas rápidas</div>
+      <button class="quick-btn" onclick="sq('¿Cuántos grupos faltan por asignar horario?')">📋 Grupos sin horario</button>
+      <button class="quick-btn" onclick="sq('¿Qué docentes están disponibles el Lunes 8-10?')">👨‍🏫 Disponibles Lunes 8-10</button>
+      <button class="quick-btn" onclick="sq('Detecta todos los conflictos del periodo 2025-1')">🔎 Detectar conflictos</button>
+      <button class="quick-btn" onclick="sq('¿Cuál es el horario asignado hasta ahora?')">📅 Ver horario actual</button>
+      <button class="quick-btn" onclick="sq('Asigna Programación 1 grupo 1 con Felipe Vasco en A101 el Lunes 8-10')">✅ Asignar clase</button>
+      <button class="quick-btn" onclick="sq('¿Cuál es la carga actual de cada docente?')">📊 Carga docentes</button>
     </div>
-
-    <div class="panel">
-      <div class="panel-title">⚡ Consultas rápidas</div>
-      <button class="quick-btn" onclick="sendQuick('¿Cuántos grupos faltan por asignar horario en 2025-1?')">📋 Grupos sin horario</button>
-      <button class="quick-btn" onclick="sendQuick('¿Qué docentes están disponibles el Lunes en la franja 8-10?')">👨‍🏫 Docentes disponibles Lunes 8-10</button>
-      <button class="quick-btn" onclick="sendQuick('Detecta todos los conflictos en el periodo 2025-1')">🔎 Detectar conflictos</button>
-      <button class="quick-btn" onclick="sendQuick('¿Cuál es el horario asignado hasta ahora?')">📅 Ver horario actual</button>
-      <button class="quick-btn" onclick="sendQuick('Asigna la materia Programación 1 grupo 1 con el docente Felipe Vasco en el aula A101 el Lunes a las 8-10')">✅ Asignar Prog.1 Lunes 8-10</button>
-      <button class="quick-btn" onclick="sendQuick('¿Cuál es la carga actual de cada docente y quién está más disponible?')">📊 Carga docentes</button>
-      <button class="quick-btn" onclick="sendQuick('¿Qué materias tienen prerrequisitos y cuáles son?')">🔗 Prerrequisitos</button>
+    <div class="sidebar-section">
+      <div class="sidebar-title">➕ Crear nuevo</div>
+      <button class="quick-btn" onclick="sq('Crea el docente Carlos Ruiz con email c.ruiz@uniajc.edu.co tipo catedra carga máxima 8 horas, disponible Lunes 14-16 y Miercoles 14-16')">👨‍🏫 Crear docente</button>
+      <button class="quick-btn" onclick="sq('Crea la materia IS701 Inteligencia Artificial 4 créditos 4 horas semana programa IS semestre 7')">📚 Crear materia</button>
+      <button class="quick-btn" onclick="sq('Crea el aula C301 tipo presencial capacidad 35 bloque Bloque C')">🏫 Crear aula</button>
+      <button class="quick-btn" onclick="sq('Crea el grupo 1 para la materia IS701 cupo máximo 30 inscritos 20 programa IS semestre 7')">👥 Crear grupo</button>
     </div>
-
-    <div class="panel">
-      <div class="panel-title">📊 Estado BD</div>
-      <div id="stats">
-        <div class="stat-row"><span class="stat-label">Docentes</span><span class="stat-val" id="s-doc">…</span></div>
-        <div class="stat-row"><span class="stat-label">Materias</span><span class="stat-val" id="s-mat">…</span></div>
-        <div class="stat-row"><span class="stat-label">Grupos</span><span class="stat-val" id="s-grp">…</span></div>
-        <div class="stat-row"><span class="stat-label">Asignados</span><span class="stat-val" id="s-asi">…</span></div>
-        <div class="stat-row"><span class="stat-label">Conflictos</span><span class="stat-val" id="s-con">…</span></div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">🗄️ Base de datos</div>
-      <div class="tabs">
-        <div class="tab active" onclick="showTab('docentes')">Docentes</div>
-        <div class="tab" onclick="showTab('horario')">Horario</div>
-        <div class="tab" onclick="showTab('conflictos')">Conflictos</div>
-        <div class="tab" onclick="showTab('grupos')">Grupos</div>
-      </div>
-      <div id="db-content" class="table-wrap">
-        <div class="empty-state">Cargando…</div>
-      </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">📊 Estado</div>
+      <div class="stat-row"><span style="color:var(--text2)">Docentes</span><span class="stat-val" id="s-doc">…</span></div>
+      <div class="stat-row"><span style="color:var(--text2)">Materias</span><span class="stat-val" id="s-mat">…</span></div>
+      <div class="stat-row"><span style="color:var(--text2)">Aulas</span><span class="stat-val" id="s-aul">…</span></div>
+      <div class="stat-row"><span style="color:var(--text2)">Grupos</span><span class="stat-val" id="s-grp">…</span></div>
+      <div class="stat-row"><span style="color:var(--text2)">Asignados</span><span class="stat-val" id="s-asi">…</span></div>
+      <div class="stat-row"><span style="color:var(--text2)">Conflictos</span><span class="stat-val" id="s-con">…</span></div>
     </div>
   </aside>
 
-  <!-- ── MAIN ── -->
+  <!-- ── PÁGINAS ── -->
   <main class="main">
-    <div class="header">
-      <h1>Agente IA — <span>Optimización de Horarios</span></h1>
-      <p>Facultad de Ingeniería de Sistemas · UNIAJC · Periodo 2025-1</p>
+
+    <!-- CHAT -->
+    <div class="page active" id="page-chat" style="flex-direction:column">
+      <div class="chat-area" id="chat">
+        <div class="msg">
+          <div class="msg-avatar agent">🤖</div>
+          <div style="flex:1">
+            <div class="msg-name">AGENTE UNIAJC v2.0</div>
+            <div class="msg-content">¡Hola! Soy el Agente de Horarios UNIAJC v2.0 👋
+
+Ahora puedo hacer mucho más:
+• 📋 Consultar grupos sin horario y disponibilidades
+• ✅ Asignar clases con validación automática
+• 🔎 Detectar conflictos y alertar
+• ➕ Crear docentes, materias, aulas y grupos
+• 📤 Exportar el horario en CSV o JSON
+• ✉️ Notificar a docentes por email
+
+Escribe lo que necesitas o usa los botones del panel izquierdo.</div>
+          </div>
+        </div>
+      </div>
+      <div class="input-bar">
+        <textarea id="input" rows="1" placeholder="Pregunta al agente... ej: Crea el docente Juan Pérez tipo planta..."
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+        <button class="send-btn" id="send-btn" onclick="send()">Enviar →</button>
+      </div>
     </div>
 
-    <div class="chat-area" id="chat">
-      <div class="msg">
-        <div class="msg-avatar agent">🤖</div>
-        <div class="msg-bubble">
-          <div class="msg-name">AGENTE UNIAJC</div>
-          <div class="msg-content">¡Hola! Soy el Agente de Optimización de Horarios de la UNIAJC 👋
+    <!-- BASE DE DATOS -->
+    <div class="page" id="page-bd">
+      <div class="bd-page">
+        <div class="bd-tabs">
+          <div class="bd-tab active" onclick="showBdTab('docentes',this)">Docentes</div>
+          <div class="bd-tab" onclick="showBdTab('materias',this)">Materias</div>
+          <div class="bd-tab" onclick="showBdTab('aulas',this)">Aulas</div>
+          <div class="bd-tab" onclick="showBdTab('grupos',this)">Grupos</div>
+          <div class="bd-tab" onclick="showBdTab('horario',this)">Horario</div>
+          <div class="bd-tab" onclick="showBdTab('conflictos',this)">Conflictos</div>
+        </div>
+        <div id="bd-content"><div class="empty">Cargando…</div></div>
+      </div>
+    </div>
 
-Puedo ayudarte con:
-• 📋 Listar grupos sin horario asignado
-• 👨‍🏫 Verificar disponibilidad de docentes
-• ✅ Asignar clases (validando conflictos)
-• 🔎 Detectar y reportar conflictos
-• 📊 Consultas sobre la BD académica
+    <!-- EXPORTAR / NOTIFICAR -->
+    <div class="page" id="page-tools">
+      <div class="tools-page">
+        <h2 style="color:var(--sky);margin-bottom:6px">⚡ Exportar y Notificar</h2>
+        <p style="color:var(--text2);font-size:13px;margin-bottom:24px">Descarga el horario o envía notificaciones a los docentes directamente desde aquí.</p>
+        <div class="tools-grid">
 
-Escribe tu pregunta o usa los botones de consulta rápida del panel izquierdo.</div>
+          <!-- EXPORTAR CSV -->
+          <div class="tool-card">
+            <h3>📤 Exportar Horario</h3>
+            <p>Descarga el horario completo del periodo en CSV (Excel) o JSON.</p>
+            <div class="form-row"><label>FORMATO</label>
+              <select id="exp-formato"><option value="csv">CSV (Excel)</option><option value="json">JSON</option></select>
+            </div>
+            <div class="form-row"><label>PERIODO</label>
+              <input id="exp-periodo" value="2025-1">
+            </div>
+            <button class="tool-btn export" onclick="exportarHorario()">⬇ Descargar</button>
+            <div id="exp-result" class="tool-result"></div>
+          </div>
+
+          <!-- NOTIFICAR DOCENTE -->
+          <div class="tool-card">
+            <h3>✉️ Notificar Docente</h3>
+            <p>Envía un email al docente con su horario o un aviso de conflicto.</p>
+            <div class="form-row"><label>DOCENTE</label>
+              <select id="not-docente"><option value="">Cargando…</option></select>
+            </div>
+            <div class="form-row"><label>TIPO DE AVISO</label>
+              <select id="not-tipo"><option value="horario">📅 Enviar su horario</option><option value="conflicto">⚠️ Avisar conflicto</option></select>
+            </div>
+            <div class="form-row"><label>MENSAJE EXTRA (opcional)</label>
+              <input id="not-msg" placeholder="Ej: Por favor confirmar asistencia">
+            </div>
+            <button class="tool-btn notify" onclick="notificarDocente()">✉️ Enviar Email</button>
+            <div id="not-result" class="tool-result"></div>
+          </div>
+
+          <!-- NOTIFICAR TODOS -->
+          <div class="tool-card">
+            <h3>📨 Notificar a Todos</h3>
+            <p>Envía el horario a todos los docentes que tienen clases asignadas.</p>
+            <div class="form-row"><label>MENSAJE EXTRA (opcional)</label>
+              <input id="notall-msg" placeholder="Ej: Inicio de clases 4 de agosto">
+            </div>
+            <button class="tool-btn notify" onclick="notificarTodos()">📨 Enviar a Todos</button>
+            <div id="notall-result" class="tool-result"></div>
+          </div>
+
+          <!-- EXPORTAR POR DOCENTE -->
+          <div class="tool-card">
+            <h3>👨‍🏫 Horario por Docente</h3>
+            <p>Exporta el horario filtrado para un docente específico.</p>
+            <div class="form-row"><label>DOCENTE</label>
+              <select id="expd-docente"><option value="">Cargando…</option></select>
+            </div>
+            <div class="form-row"><label>FORMATO</label>
+              <select id="expd-formato"><option value="csv">CSV</option><option value="json">JSON</option></select>
+            </div>
+            <button class="tool-btn export" onclick="exportarPorDocente()">⬇ Descargar</button>
+            <div id="expd-result" class="tool-result"></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="input-bar">
-      <textarea id="input" rows="1" placeholder="Pregunta al agente… ej: ¿Qué grupos faltan por asignar?"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
-        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
-      <button class="send-btn" id="send-btn" onclick="send()">Enviar →</button>
-    </div>
   </main>
 </div>
 
 <script>
 let dbData = null;
-let activeTab = 'docentes';
+let activeBdTab = 'docentes';
 
-// ── Cargar estado BD
-async function cargarEstado() {
-  try {
-    const res = await fetch('/api/estado');
-    dbData = await res.json();
-    document.getElementById('s-doc').textContent = dbData.docentes?.length || 0;
-    document.getElementById('s-mat').textContent = dbData.materias?.length || 0;
-    document.getElementById('s-grp').textContent = dbData.grupos?.length || 0;
-    document.getElementById('s-asi').textContent = dbData.horario?.length || 0;
-    document.getElementById('s-con').textContent = dbData.conflictos?.length || 0;
-    showTab(activeTab);
-  } catch(e) { console.error(e); }
+// ── Navegación
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  el.classList.add('active');
+  if (name === 'bd') showBdTab(activeBdTab, document.querySelector('.bd-tab.active'));
 }
 
-function showTab(tab) {
-  activeTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => {
-    if (t.textContent.toLowerCase().includes(tab.split('s')[0])) t.classList.add('active');
-  });
-  // hacky active by index
-  const tabs = ['docentes','horario','conflictos','grupos'];
-  const idx = tabs.indexOf(tab);
-  document.querySelectorAll('.tab')[idx]?.classList.add('active');
+// ── Chat
+function sq(text) { document.getElementById('input').value = text; send(); showPage('chat', document.querySelectorAll('.nav-tab')[0]); }
 
-  const el = document.getElementById('db-content');
-  if (!dbData) { el.innerHTML = '<div class="empty-state">Sin datos</div>'; return; }
-
-  if (tab === 'docentes') {
-    const rows = dbData.docentes || [];
-    el.innerHTML = rows.length === 0 ? '<div class="empty-state">Sin docentes</div>' :
-      `<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Carga</th></tr></thead><tbody>
-      ${rows.map(d => `<tr>
-        <td>${d.nombre}</td>
-        <td><span class="badge ${d.tipo==='planta'?'badge-mint':'badge-gold'}">${d.tipo}</span></td>
-        <td>${d.carga_actual}/${d.carga_max}h</td>
-      </tr>`).join('')}</tbody></table>`;
-  }
-  else if (tab === 'horario') {
-    const rows = dbData.horario || [];
-    el.innerHTML = rows.length === 0 ? '<div class="empty-state">Sin asignaciones aún</div>' :
-      `<table><thead><tr><th>Materia</th><th>Día</th><th>Franja</th><th>Estado</th></tr></thead><tbody>
-      ${rows.map(h => `<tr>
-        <td>${h.materia}</td>
-        <td>${h.dia}</td>
-        <td><span class="badge badge-sky">${h.franja}</span></td>
-        <td><span class="badge ${h.estado==='confirmado'?'badge-mint':h.estado==='conflicto'?'badge-coral':'badge-lav'}">${h.estado}</span></td>
-      </tr>`).join('')}</tbody></table>`;
-  }
-  else if (tab === 'conflictos') {
-    const rows = dbData.conflictos || [];
-    el.innerHTML = rows.length === 0 ? '<div class="empty-state">✅ Sin conflictos detectados</div>' :
-      `<table><thead><tr><th>Tipo</th><th>Descripción</th></tr></thead><tbody>
-      ${rows.map(c => `<tr>
-        <td><span class="badge badge-coral">${c.tipo}</span></td>
-        <td style="font-size:11px">${c.descripcion}</td>
-      </tr>`).join('')}</tbody></table>`;
-  }
-  else if (tab === 'grupos') {
-    const rows = dbData.grupos || [];
-    el.innerHTML = rows.length === 0 ? '<div class="empty-state">Sin grupos</div>' :
-      `<table><thead><tr><th>Materia</th><th>Grupo</th><th>Inscritos</th></tr></thead><tbody>
-      ${rows.map(g => `<tr>
-        <td style="font-size:11px">${g.materia}</td>
-        <td>#${g.num_grupo}</td>
-        <td>${g.inscritos}</td>
-      </tr>`).join('')}</tbody></table>`;
-  }
-}
-
-// ── Enviar pregunta al agente
 async function send() {
   const input = document.getElementById('input');
   const pregunta = input.value.trim();
   if (!pregunta) return;
-
   addMsg('user', 'TÚ', pregunta);
-  input.value = '';
-  input.style.height = 'auto';
-
-  const thinkId = addThinking();
+  input.value = ''; input.style.height = 'auto';
+  const tid = addThinking();
   document.getElementById('send-btn').disabled = true;
-
   try {
-    const res = await fetch('/api/agente', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pregunta })
-    });
+    const res = await fetch('/api/agente', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ pregunta }) });
     const data = await res.json();
-    removeThinking(thinkId);
+    removeThinking(tid);
     addMsg('agent', 'AGENTE UNIAJC', data.respuesta || data.error || 'Sin respuesta');
-    cargarEstado(); // refrescar estadísticas
+    cargarEstado();
   } catch(e) {
-    removeThinking(thinkId);
-    addMsg('agent', 'AGENTE UNIAJC', '❌ Error de conexión con el servidor.');
+    removeThinking(tid);
+    addMsg('agent', 'AGENTE UNIAJC', '❌ Error de conexión.');
   } finally {
     document.getElementById('send-btn').disabled = false;
     document.getElementById('input').focus();
   }
 }
 
-function sendQuick(text) {
-  document.getElementById('input').value = text;
-  send();
-}
-
 function addMsg(type, name, content) {
   const chat = document.getElementById('chat');
   const div = document.createElement('div');
   div.className = 'msg';
-  div.innerHTML = `
-    <div class="msg-avatar ${type}">${type==='user'?'A':'🤖'}</div>
-    <div class="msg-bubble">
-      <div class="msg-name">${name}</div>
-      <div class="msg-content">${escHtml(content)}</div>
-    </div>`;
+  div.innerHTML = `<div class="msg-avatar ${type}">${type==='user'?'A':'🤖'}</div><div style="flex:1"><div class="msg-name">${name}</div><div class="msg-content">${esc(content)}</div></div>`;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
-
-let thinkCount = 0;
+let tc = 0;
 function addThinking() {
-  const id = 'think-' + (++thinkCount);
-  const chat = document.getElementById('chat');
-  const div = document.createElement('div');
-  div.id = id;
-  div.className = 'thinking';
-  div.innerHTML = `🤖 El agente está pensando<span class="dots"><span>.</span><span>.</span><span>.</span></span>`;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-  return id;
+  const id='t'+(++tc), chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.id=id; d.className='thinking';
+  d.innerHTML='🤖 El agente está procesando<span class="dots"><span>.</span><span>.</span><span>.</span></span>';
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight; return id;
 }
-function removeThinking(id) {
-  document.getElementById(id)?.remove();
+function removeThinking(id) { document.getElementById(id)?.remove(); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Estado BD
+async function cargarEstado() {
+  try {
+    const res = await fetch('/api/estado');
+    dbData = await res.json();
+    document.getElementById('s-doc').textContent = dbData.docentes?.length||0;
+    document.getElementById('s-mat').textContent = dbData.materias?.length||0;
+    document.getElementById('s-aul').textContent = dbData.aulas?.length||0;
+    document.getElementById('s-grp').textContent = dbData.grupos?.length||0;
+    document.getElementById('s-asi').textContent = dbData.horario?.length||0;
+    document.getElementById('s-con').textContent = dbData.conflictos?.length||0;
+    // Llenar selectores de docentes
+    const opts = (dbData.docentes||[]).map(d=>`<option value="${d.id}">${d.nombre}</option>`).join('');
+    document.getElementById('not-docente').innerHTML = opts || '<option>Sin docentes</option>';
+    document.getElementById('expd-docente').innerHTML = opts || '<option>Sin docentes</option>';
+    if (activeBdTab) showBdTab(activeBdTab);
+  } catch(e) { console.error(e); }
 }
 
-function escHtml(str) {
-  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// ── Tablas BD
+function showBdTab(tab, el) {
+  activeBdTab = tab;
+  document.querySelectorAll('.bd-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.querySelectorAll('.bd-tab').forEach(t => { if(t.textContent.toLowerCase().includes(tab.substring(0,4))) t.classList.add('active'); });
+
+  const el2 = document.getElementById('bd-content');
+  if (!dbData) { el2.innerHTML = '<div class="empty">Sin datos — actualiza</div>'; return; }
+
+  const tables = {
+    docentes: () => {
+      const rows = dbData.docentes||[];
+      if(!rows.length) return '<div class="empty">No hay docentes</div>';
+      return `<table class="data-table"><thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Tipo</th><th>Carga</th></tr></thead><tbody>
+        ${rows.map(d=>`<tr><td>${d.id}</td><td>${d.nombre}</td><td style="font-size:11px">${d.email||'-'}</td>
+        <td><span class="badge ${d.tipo==='planta'?'b-mint':'b-gold'}">${d.tipo}</span></td>
+        <td>${d.carga_actual}/${d.carga_max}h</td></tr>`).join('')}</tbody></table>`;
+    },
+    materias: () => {
+      const rows = dbData.materias||[];
+      if(!rows.length) return '<div class="empty">No hay materias</div>';
+      return `<table class="data-table"><thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Semestre</th><th>Créditos</th></tr></thead><tbody>
+        ${rows.map(m=>`<tr><td>${m.id}</td><td><span class="badge b-sky">${m.codigo}</span></td><td>${m.nombre}</td><td>Sem ${m.semestre}</td><td>${m.creditos}</td></tr>`).join('')}</tbody></table>`;
+    },
+    aulas: () => {
+      const rows = dbData.aulas||[];
+      if(!rows.length) return '<div class="empty">No hay aulas</div>';
+      return `<table class="data-table"><thead><tr><th>ID</th><th>Código</th><th>Tipo</th><th>Capacidad</th><th>Bloque</th></tr></thead><tbody>
+        ${rows.map(a=>`<tr><td>${a.id}</td><td>${a.codigo}</td>
+        <td><span class="badge ${a.tipo==='presencial'?'b-mint':a.tipo==='laboratorio'?'b-gold':'b-lav'}">${a.tipo}</span></td>
+        <td>${a.capacidad}</td><td>${a.bloque||'-'}</td></tr>`).join('')}</tbody></table>`;
+    },
+    grupos: () => {
+      const rows = dbData.grupos||[];
+      if(!rows.length) return '<div class="empty">No hay grupos</div>';
+      return `<table class="data-table"><thead><tr><th>ID</th><th>Materia</th><th>Grupo</th><th>Inscritos</th><th>Cupo</th><th>Sem</th></tr></thead><tbody>
+        ${rows.map(g=>`<tr><td>${g.id}</td><td style="font-size:11px">${g.materia}</td><td>#${g.num_grupo}</td><td>${g.inscritos}</td><td>${g.cupo_max}</td><td>${g.semestre}</td></tr>`).join('')}</tbody></table>`;
+    },
+    horario: () => {
+      const rows = dbData.horario||[];
+      if(!rows.length) return '<div class="empty">Sin asignaciones aún</div>';
+      return `<table class="data-table"><thead><tr><th>Día</th><th>Franja</th><th>Materia</th><th>Docente</th><th>Aula</th><th>Estado</th><th></th></tr></thead><tbody>
+        ${rows.map(h=>`<tr>
+          <td>${h.dia}</td><td><span class="badge b-sky">${h.franja}</span></td>
+          <td style="font-size:11px">${h.materia}</td>
+          <td style="font-size:11px">${h.docente}</td>
+          <td>${h.aula}</td>
+          <td><span class="badge ${h.estado==='confirmado'?'b-mint':h.estado==='conflicto'?'b-coral':'b-lav'}">${h.estado}</span></td>
+          <td><button class="action-btn" onclick="eliminarAsignacion(${h.id})">✕</button></td>
+        </tr>`).join('')}</tbody></table>`;
+    },
+    conflictos: () => {
+      const rows = dbData.conflictos||[];
+      if(!rows.length) return '<div class="empty">✅ Sin conflictos detectados</div>';
+      return `<table class="data-table"><thead><tr><th>Tipo</th><th>Descripción</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>
+        ${rows.map(c=>`<tr>
+          <td><span class="badge b-coral">${c.tipo}</span></td>
+          <td style="font-size:11px">${c.descripcion}</td>
+          <td style="font-size:11px">${c.fecha}</td>
+          <td><span class="badge ${c.resuelto?'b-mint':'b-gold'}">${c.resuelto?'resuelto':'activo'}</span></td>
+        </tr>`).join('')}</tbody></table>`;
+    }
+  };
+  el2.innerHTML = tables[tab] ? tables[tab]() : '<div class="empty">Tab no reconocida</div>';
 }
 
-// ── Inicializar
+// ── Eliminar asignación
+async function eliminarAsignacion(id) {
+  if (!confirm(`¿Eliminar asignación #${id}?`)) return;
+  try {
+    const res = await fetch(`/api/horario/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.exito) { cargarEstado(); showBdTab('horario'); }
+    else alert('Error: ' + data.error);
+  } catch(e) { alert('Error de conexión'); }
+}
+
+// ── Exportar
+async function exportarHorario() {
+  const formato = document.getElementById('exp-formato').value;
+  const periodo = document.getElementById('exp-periodo').value;
+  const el = document.getElementById('exp-result');
+  el.className = 'tool-result show'; el.textContent = 'Generando…';
+  try {
+    const res = await fetch(`/api/exportar?formato=${formato}&periodo=${periodo}`);
+    if (!res.ok) { el.textContent = 'Error al exportar'; return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url;
+    a.download = `horario-${periodo}.${formato}`; a.click();
+    el.textContent = `✅ Descarga iniciada: horario-${periodo}.${formato}`;
+  } catch(e) { el.textContent = '❌ Error: ' + e.message; }
+}
+
+async function exportarPorDocente() {
+  const docente_id = document.getElementById('expd-docente').value;
+  const formato = document.getElementById('expd-formato').value;
+  const el = document.getElementById('expd-result');
+  el.className = 'tool-result show'; el.textContent = 'Generando…';
+  try {
+    const res = await fetch(`/api/exportar?formato=${formato}&periodo=2025-1&docente_id=${docente_id}`);
+    if (!res.ok) { el.textContent = 'Error al exportar'; return; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=`horario-docente-${docente_id}.${formato}`; a.click();
+    el.textContent = `✅ Descarga iniciada`;
+  } catch(e) { el.textContent = '❌ ' + e.message; }
+}
+
+// ── Notificar
+async function notificarDocente() {
+  const docente_id = document.getElementById('not-docente').value;
+  const tipo_aviso = document.getElementById('not-tipo').value;
+  const mensaje_extra = document.getElementById('not-msg').value;
+  const el = document.getElementById('not-result');
+  el.className = 'tool-result show'; el.textContent = 'Enviando…';
+  try {
+    const res = await fetch('/api/notificar', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ docente_id, tipo_aviso, mensaje_extra }) });
+    const data = await res.json();
+    el.textContent = data.simulado
+      ? `📧 Simulado (configura SMTP en .env para envío real)\nDestinatario: ${data.destinatario}\nClases incluidas: ${data.clases_incluidas}`
+      : data.exito ? `✅ Email enviado a ${data.destinatario}` : `❌ ${data.razon}`;
+  } catch(e) { el.textContent = '❌ ' + e.message; }
+}
+
+async function notificarTodos() {
+  const mensaje_extra = document.getElementById('notall-msg').value;
+  const el = document.getElementById('notall-result');
+  el.className = 'tool-result show'; el.textContent = 'Enviando a todos los docentes…';
+  if (!dbData?.docentes?.length) { el.textContent = 'No hay docentes cargados'; return; }
+  const docentes = dbData.docentes;
+  let ok = 0, fail = 0;
+  for (const d of docentes) {
+    try {
+      const res = await fetch('/api/notificar', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ docente_id: d.id, tipo_aviso: 'horario', mensaje_extra }) });
+      const data = await res.json();
+      if (data.exito) ok++; else fail++;
+    } catch(_) { fail++; }
+    el.textContent = `Procesando ${ok+fail}/${docentes.length}…`;
+  }
+  el.textContent = `✅ Completado: ${ok} enviados${fail>0?`, ${fail} con error`:''}`;
+}
+
+// ── Init
 cargarEstado();
-setInterval(cargarEstado, 15000); // refrescar cada 15s
+setInterval(cargarEstado, 20000);
 </script>
 </body>
 </html>
